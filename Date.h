@@ -27,41 +27,73 @@ enum class Month
 class Date
 {
 private:
-  int month;
+  Month month;
   int day;
   int year;
 
 public:
-  // Default Constructor
-  Date();
-  // Overload Constructor
-  Date(int m, int d, int y);
+  // Constructors
+  Date(); // Default Constructor
+  /*
+    Constructor that initializes month, day and year
+    @param m month
+    @param d day
+    @param y year
+  */
+  Date(Month m, int d, int y); // Overload Constructor
 
   // Destructor
   ~Date();
 
   // getters
-  int getMonth() const;
+  Month getMonth() const;
+  /*
+    Return the month of the date
+    @return month of the date
+  */
   int getDay() const;
+  /*
+    Return the day of the date
+    @return day of the date
+  */
   int getYear() const;
+  /*
+    Return the year of the date
+    @return year of the date
+  */
+
   // setters
-  void setMonth(int m);
+  Month setMonth(Month m);
+  /*
+    Sets the month of the date
+    @param m month to change to
+  */
   void setDay(int d);
+  /*
+    Sets the day of the date
+    @param m day to change to
+  */
   void setYear(int y);
+  /*
+    Sets the year of the date
+    @param m year to change to
+  */
 
-  void listAllDates(int y); // FIX ME: change return time to a list of dates
+  static std::string listAllDates(int y);
+  /*
+    Function that takes year as a parameter and returns list of all dates for that year
+    @param y selected year
+    @return string list of all dates for that year
+  */
+
   std::string showCalender(int y);
+  /*
+    Function that displays the calender format of selected year
+    @param y selected year
+    @return string calender format for that year
+  */
 
-  // inner class InvalidDateException
-  // class InvalidDateException : public std::exception
-  // {
-  // public:
-  //   const char *what() const noexcept override
-  //   {
-  //     return "Invalid Date";
-  //   }
-  // };
-
+  // inner class InvalidDateException to throw error if a date is not valid
   class InvalidDateException
   {
   public:
@@ -72,12 +104,20 @@ public:
     std::string Str;
   };
 
+  // function isALeapYear that return true if it is a leap year
   bool isALeapYear(int y);
+  /*
+    Function that returns true if it is a leap year
+    @param y selected year
+    @return bool, true if leap year, false if not
+  */
 
-  // enum class for month
-
-  // toString member function that takes in format as parameter
-  //  and display the date in the corresponding format "mm-dd-yyyy"
+  std::string toString(std::string format);
+  /*
+    function toString returns formatted string based on desired format
+    @param format desired function format
+    @return string of the date modified to selected format
+  */
 };
 #endif
 

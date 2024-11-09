@@ -2,12 +2,12 @@
 
 Date::Date()
 {
-  month = 0;
+  month = Month::January;
   day = 0;
   year = 0;
 }
 
-Date::Date(int m, int d, int y)
+Date::Date(Month m, int d, int y)
 {
   this->month = m;
   this->day = d;
@@ -15,15 +15,15 @@ Date::Date(int m, int d, int y)
 }
 Date::~Date() {}
 // getters
-int Date::getMonth() const { return month; }
+Month Date::getMonth() const { return month; }
 int Date::getDay() const { return day; }
 int Date::getYear() const { return year; }
 // setters
-void Date::setMonth(int m) { month = m; }
+Month Date::setMonth(Month m) { month = m; }
 void Date::setDay(int d) { day = d; }
 void Date::setYear(int y) { year = y; }
 
-void Date::listAllDates(int y) // FIX ME: change return time to a list of dates
+std::string Date::listAllDates(int y) // FIX ME: change return time to a list of dates
 {};
 std::string showCalender(int y)
 {
