@@ -2,8 +2,27 @@
 #define UTILS_H
 
 #include <iostream>
-#include <vector>
 #include <string>
+
+#define YYYYMMDD "yyyy-mm-dd"
+#define DDMMYYYY "dd-mm-yyyy"
+#define MMDDYYYY "mm-dd-yyyy"
+
+enum class Month
+{
+  January = 1,
+  February,
+  March,
+  April,
+  May,
+  June,
+  July,
+  August,
+  September,
+  October,
+  November,
+  December
+};
 
 class Date
 {
@@ -43,30 +62,23 @@ public:
   //   }
   // };
 
-  class InvalidDateException;
+  class InvalidDateException
+  {
+  public:
+    InvalidDateException(std::string str) : Str(str) {}
+    std::string invalid() const { return Str; }
+
+  private:
+    std::string Str;
+  };
 
   bool isALeapYear(int y);
 
   // enum class for month
-  enum class Month
-  {
-    January = 1,
-    February,
-    March,
-    April,
-    May,
-    June,
-    July,
-    August,
-    September,
-    October,
-    November,
-    December
-  };
+
   // toString member function that takes in format as parameter
   //  and display the date in the corresponding format "mm-dd-yyyy"
 };
-
 #endif
 
 /*
