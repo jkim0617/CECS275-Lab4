@@ -94,17 +94,16 @@ public:
   */
 
   // inner class InvalidDateException to throw error if a date is not valid
-  class InvalidDateException
+  class InvalidDate
   {
   public:
-    InvalidDateException(std::string str) : Str(str) {}
+    InvalidDate(std::string str) : Str(str) {}
     std::string invalid() const { return Str; }
 
   private:
     std::string Str;
   };
 
-  // function isALeapYear that return true if it is a leap year
   bool isALeapYear(int y);
   /*
     Function that returns true if it is a leap year
@@ -118,26 +117,19 @@ public:
     @param format desired function format
     @return string of the date modified to selected format
   */
-};
-#endif
 
-/*
-  - (done) Date class has three private members
-  - (done) two constructors:
-    - default
-    - overload w/ 3 param
-  - (done) getter functions
-  - (done) setter functions
-  - listAllDates()
-  - showCalender()
-  - inner class InvalidDateException
-  - isALeapYear()
-  - enum class for Month
-  - toString()
-  - overload "<<"
-  - overload ">>"
-  - overload "++"
-  - overload "--"
-  - overload "+"
-  - overload "-"
-*/
+  Date &operator++();
+  Date operator++(int);
+  Date &operator--();
+  Date operator--(int);
+
+  friend std::ostream &operator<<(std::ostream &out, const Date &date);
+  friend std::istream &operator>>(std::istream &is, Date &date);
+};
+
+bool isValidDate(const Date &date);
+
+Date operator+(const Date &date, int days);
+Date operator-(const Date &date, int days);
+
+#endif
