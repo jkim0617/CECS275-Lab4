@@ -1,5 +1,7 @@
 #include "Date.h"
 
+// commented monthToStr and toString and cout overload and monthToInt
+
 //------------------ MONTH TYPE CONVERSION HELPER FUNCTIONS ------------------
 std::string monthToStr(Month mm)
 {
@@ -91,68 +93,87 @@ Month intToStr(int mm)
     return Month::December;
   }
 }
-//----------------------------------------------------------------------------
-// getters
-Month Date::getMonth() const { return month; }
-int Date::getDay() const { return day; }
-int Date::getYear() const { return year; }
-// setters
-Month Date::setMonth(Month m) { month = m; }
-void Date::setDay(int d) { day = d; }
-void Date::setYear(int y) { year = y; }
-//----------------------------------------------------------------------------
-// constructors & deconstructors
-
-std::ostream &operator<<(std::ostream &os, const Date &dt)
-{
-  std::string date;
-  std::string month = monthToStr(dt.getMonth());
-  std::string days;
-  std::string year = std::to_string(dt.year());
-
-  if (dt.day() < 10)
-  {
-    days += "0";
-  }
-  days += std::to_string(dt.day());
-  date = month + " " + days + ", " + year;
-
-  os << date;
-  return os;
-}
 
 Date::Date()
 {
+  day = 1;
   month = Month::January;
-  day = 0;
-  year = 0;
+  year = 2000;
 }
-Date::Date(Month m, int d, int y)
+Date::Date(int d, Month m, int y)
 {
-  this->month = m;
   this->day = d;
+  this->month = m;
   this->year = y;
 }
-Date::~Date() {}
-//----------------------------------------------------------------------------
-std::string Date::listAllDates(int y) // FIX ME: add function definition
-{};
+// getters
+int Date::getDay() const { return day; }
+Month Date::getMonth() const { return month; }
+int Date::getYear() const { return year; }
+// setters
+void Date::setDay(int d) { day = d; }
+Month Date::setMonth(Month m) { month = m; }
+void Date::setYear(int y) { year = y; }
 
-std::string showCalender(int y) // FIX ME: add function definition
+void Date::listAllDates(int y)
 {
-  std::string final;
-  return final;
-};
+  std::ofstream dateList("ListofDates.txt");
+  for (int i = 0; i < 12; i++)
+  {
+    int numDays;
+    if (i == 0 || i == 2 || i == 4 || i == 6 || i == 7 || i == 9 || i == 11)
+    {
+      numDays = 31;
+    }
+    else if (i == 1)
+    {
+      numDays = (y % 4 == 0) ? 29 : 28;
+    }
+    else
+    {
+      numDays = 30;
+    }
+    for (int j = 1; j <= numDays; j++)
+    {
+      dateList << y << "-";
+      dateList << ((i < 11) ? "0" : "");
+      dateList << i + 1 << "-";
+      dateList << ((j < 10) ? "0" : "");
+      dateList << j << std::endl;
+    }
+  }
+}
 
-// inner class InvalidDateException
+void Date::showCalender(int y)
+{
+  std::string months[13] = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+  for (int i = 1; i < 12; i++)
+  {
+    std::cout << std::setw(14) << months[i] << " " << y << std::endl;
+    std::cout << "Sun Mon Tue Wed Thu Fri Sat" << std::endl;
+    int numDays;
+    if (i == 1 || i == 3 || i == 5 || i == 7 || i == 8 || i == 10 || i == 12)
+    {
+      numDays = 31;
+    }
+    else if (i == 2)
+    {
+      numDays = (y % 4 == 0) ? 29 : 28;
+    }
+    else
+    {
+      numDays = 30;
+    }
+  }
+}
 
-bool Date::isALeapYear(int y) { return (y % 4 == 0); }
+bool Date::isALeapYear(int y) { return (y % 4) == 0; }
 
 // toString member function that takes in format as parameter
 std::string Date::toString(std::string format)
 {
   std::string yearStr = std::to_string(year); // convert year into string
-  std::string monthStr = monthToStr(month);   // convert month into string
+  std::string monthStr = monthToInt(month);   // convert month into string
   std::string dayStr = (day < 10) ? "0" : "";
   if (format == YYYYMMDD)
   {
@@ -182,3 +203,166 @@ std::string Date::toString(std::string format)
 }
 
 // and display the date in the corresponding format "mm-dd-yyyy"
+
+std::ostream &operator<<(std::ostream &os, const Date &dt)
+{
+  std::string date;
+  std::string month = monthToStr(dt.getMonth());
+  std::string days;
+  std::string year = std::to_string(dt.getYear());
+
+  if (dt.getDay() < 10)
+  {
+    days += "0";
+  }
+  days += std::to_string(dt.getDay());
+  date = month + " " + days + ", " + year;
+  os << date << std::endl;
+  return os;
+}
+
+std::istream &operator>>(std::istream &is, Date &date)
+{
+  /*
+    cin >> myDate; prompts user for new date
+  */
+  std::cout << "Enter a day: ";
+  is >> date.day;
+  std::cout << "Enter a month (1-12): ";
+  int mm;
+  is >> mm;
+  date.setMonth(intToStr(mm));
+  std::cout << "Enter a year: ";
+  is >> date.year;
+  // if (isValidDate(date))
+  //   return is;
+  // else
+  //   throw Date::InvalidDate("Date invalid");
+  return is;
+}
+
+Date &Date::operator++()
+{
+  Date temp(*this);
+  int tempDay = temp.day + 1;
+  int tempMonth = stoi(monthToInt(temp.month));
+  int tempYear = temp.year;
+  if (month == Month::April || month == Month::June || month == Month::September || month == Month::November)
+  {
+    if (tempDay > 30)
+    {
+      tempMonth++;
+      tempDay = 1;
+    }
+  }
+  // feb exception
+  else if (month == Month::February)
+  {
+    if (isALeapYear(tempYear))
+    {
+      if (tempDay > 29)
+      {
+        tempMonth++;
+        tempDay = 1;
+      }
+    }
+    else
+    {
+      if (tempDay > 28)
+      {
+        tempMonth++;
+        tempDay = 1;
+      }
+    }
+  }
+  // dec exception
+  else if (month == Month::December)
+  {
+    if (tempDay > 31)
+    {
+      tempMonth = 1;
+      tempDay = 1;
+      tempYear++;
+    }
+  }
+  else
+  {
+    if (tempDay > 31)
+    {
+      tempMonth++;
+      tempDay = 1;
+    }
+  }
+  day = tempDay;
+  month = intToStr(tempMonth);
+  year = tempYear;
+  return *this;
+}
+
+Date Date::operator++(int)
+{
+  Date temp(*this);
+  operator++();
+  return temp;
+}
+
+Date &Date::operator--()
+{
+  Date temp(*this);
+  int tempDay = temp.day - 1;
+  int tempMonth = stoi(monthToInt(temp.month));
+  int tempYear = temp.year;
+
+  if (tempDay < 1)
+  {
+    if (temp.month == Month::April || temp.month == Month::June || temp.month == Month::September || temp.month == Month::November || temp.month == Month::February || temp.month == Month::August)
+    {
+      tempMonth--;
+      tempDay = 31;
+    }
+    else if (temp.month == Month::March)
+    {
+      tempMonth--;
+      day = isALeapYear(tempYear) ? 29 : 28;
+    }
+    else
+    {
+      tempMonth--;
+      day = 30;
+    }
+  }
+  day = tempDay;
+  month = intToStr(tempMonth);
+  year = tempYear;
+  return *this;
+}
+
+Date Date::operator--(int)
+{
+  Date temp(*this);
+  operator--();
+  return temp;
+}
+
+// Overload addition operator (+). (E.g. Date(12, 1, 2001) + 1 --> Date(12, 2, 2001))
+Date operator+(const Date &date, int days)
+{
+  Date temp = date;
+
+  for (int i = 0; i < days; i++)
+  {
+    ++temp;
+  }
+  return temp;
+}
+// Overload addition operator (-). (E.g. Date(12, 1, 2001) - 1 --> Date(11, 30, 2001))
+Date operator-(const Date &date, int days)
+{
+  Date temp = date;
+
+  for (int i = 0; i < days; i++)
+  {
+    --temp;
+  }
+  return temp;
+}

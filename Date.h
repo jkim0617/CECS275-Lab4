@@ -2,11 +2,13 @@
 #define UTILS_H
 
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <iomanip>
 
 #define YYYYMMDD "yyyy-mm-dd"
 #define DDMMYYYY "dd-mm-yyyy"
-#define MMDDYYYY "mm-dd-yyyy"
+#define MMDDYYYY "mm-dd--yyyy"
 
 enum class Month
 {
@@ -40,21 +42,20 @@ public:
     @param d day
     @param y year
   */
-  Date(Month m, int d, int y); // Overload Constructor
-
+  Date(int d, Month m, int y); // Overload Constructor
   // Destructor
-  ~Date();
+  // ~Date();
 
   // getters
-  Month getMonth() const;
-  /*
-    Return the month of the date
-    @return month of the date
-  */
   int getDay() const;
   /*
     Return the day of the date
     @return day of the date
+  */
+  Month getMonth() const;
+  /*
+    Return the month of the date
+    @return month of the date
   */
   int getYear() const;
   /*
@@ -63,15 +64,15 @@ public:
   */
 
   // setters
-  Month setMonth(Month m);
-  /*
-    Sets the month of the date
-    @param m month to change to
-  */
   void setDay(int d);
   /*
     Sets the day of the date
     @param m day to change to
+  */
+  Month setMonth(Month m);
+  /*
+    Sets the month of the date
+    @param m month to change to
   */
   void setYear(int y);
   /*
@@ -79,14 +80,14 @@ public:
     @param m year to change to
   */
 
-  static std::string listAllDates(int y);
+  void listAllDates(int y);
   /*
     Function that takes year as a parameter and returns list of all dates for that year
     @param y selected year
     @return string list of all dates for that year
   */
 
-  std::string showCalender(int y);
+  void showCalender(int y);
   /*
     Function that displays the calender format of selected year
     @param y selected year
@@ -96,12 +97,6 @@ public:
   // inner class InvalidDateException to throw error if a date is not valid
   class InvalidDate
   {
-  public:
-    InvalidDate(std::string str) : Str(str) {}
-    std::string invalid() const { return Str; }
-
-  private:
-    std::string Str;
   };
 
   bool isALeapYear(int y);
@@ -119,15 +114,15 @@ public:
   */
 
   Date &operator++();
+  // ++Date
   Date operator++(int);
+  // Date++
   Date &operator--();
   Date operator--(int);
 
-  friend std::ostream &operator<<(std::ostream &out, const Date &date);
+  friend std::ostream &operator<<(std::ostream &os, const Date &date);
   friend std::istream &operator>>(std::istream &is, Date &date);
 };
-
-bool isValidDate(const Date &date);
 
 Date operator+(const Date &date, int days);
 Date operator-(const Date &date, int days);
