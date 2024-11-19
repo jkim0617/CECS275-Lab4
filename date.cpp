@@ -2,7 +2,7 @@
 
 // commented monthToStr and toString and cout overload and monthToInt
 
-//------------------ MONTH TYPE CONVERSION HELPER FUNCTIONS ------------------
+//------------------ HELPER FUNCTIONS ------------------
 std::string monthToStr(Month mm)
 {
   switch (mm)
@@ -93,6 +93,45 @@ Month intToStr(int mm)
     return Month::December;
   }
 }
+bool isValidDate(const Date &date)
+{
+  if (date.getMonth() < Month::January || date.getMonth() > Month::December)
+  {
+    return false;
+  }
+  if (date.getMonth() == Month::February)
+  {
+    if (date.getYear() % 4 == 0)
+    {
+      if (date.getDay() > 29)
+      {
+        return false;
+      }
+    }
+    else
+    {
+      if (date.getDay() > 28)
+      {
+        return false;
+      }
+    }
+  }
+  if (date.getMonth() == Month::April || date.getMonth() == Month::June || date.getMonth() == Month::September || date.getMonth() == Month::November)
+  {
+    if (date.getDay() < 1 || date.getDay() > 30)
+    {
+      return false;
+    }
+  }
+  else
+  {
+    if (date.getDay() < 1 || date.getDay() > 31)
+    {
+      return false;
+    }
+  }
+  return true;
+}
 
 Date::Date()
 {
@@ -102,9 +141,20 @@ Date::Date()
 }
 Date::Date(int d, Month m, int y)
 {
-  this->day = d;
-  this->month = m;
-  this->year = y;
+  try
+  {
+    if (!isValidDate(*this))
+    {
+      throw InvalidDateException();
+    }
+  }
+  catch (InvalidDateException)
+  {
+    std::cout << "Invalid Date" << std::endl;
+  }
+}
+Date::~Date()
+{
 }
 // getters
 int Date::getDay() const { return day; }
@@ -147,10 +197,59 @@ void Date::listAllDates(int y)
 void Date::showCalender(int y)
 {
   std::string months[13] = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-  for (int i = 1; i < 12; i++)
+  for (int i = 1; i < 13; i++)
   {
-    std::cout << std::setw(14) << months[i] << " " << y << std::endl;
+    std::cout << months[i] << " " << y << std::endl;
     std::cout << "Sun Mon Tue Wed Thu Fri Sat" << std::endl;
+
+    int monthNum = i;
+    if (monthNum < 3)
+    {
+      monthNum += 12;
+      year--;
+    }
+
+    int century = y / 100;
+    int yearInCentury = y % 100;
+
+    int dayOfWeek = (1 +
+                     (13 * (monthNum + 1)) / 5 +
+                     yearInCentury +
+                     yearInCentury / 4 +
+                     century / 4 -
+                     2 * century) %
+                    7;
+
+    // Adjust for negative values
+    if (dayOfWeek < 0)
+    {
+      dayOfWeek += 7;
+    }
+
+    switch (dayOfWeek)
+    {
+    case 1:
+      break;
+    case 2:
+      std::cout << "    ";
+      break;
+    case 3:
+      std::cout << "        ";
+      break;
+    case 4:
+      std::cout << "            ";
+      break;
+    case 5:
+      std::cout << "                ";
+      break;
+    case 6:
+      std::cout << "                    ";
+      break;
+    case 7:
+      std::cout << "                        ";
+      break;
+    }
+
     int numDays;
     if (i == 1 || i == 3 || i == 5 || i == 7 || i == 8 || i == 10 || i == 12)
     {
@@ -164,6 +263,19 @@ void Date::showCalender(int y)
     {
       numDays = 30;
     }
+    for (int j = 1; j < numDays + 1; j++)
+    {
+      int dateAdjust = dayOfWeek;
+      if (j < 10)
+        std::cout << "0";
+      std::cout << j << "  ";
+      if ((dayOfWeek) % 7 == 0)
+      {
+        std::cout << std::endl;
+      }
+      dayOfWeek++;
+    }
+    std::cout << std::endl;
   }
 }
 
@@ -223,9 +335,6 @@ std::ostream &operator<<(std::ostream &os, const Date &dt)
 
 std::istream &operator>>(std::istream &is, Date &date)
 {
-  /*
-    cin >> myDate; prompts user for new date
-  */
   std::cout << "Enter a day: ";
   is >> date.day;
   std::cout << "Enter a month (1-12): ";
@@ -234,11 +343,21 @@ std::istream &operator>>(std::istream &is, Date &date)
   date.setMonth(intToStr(mm));
   std::cout << "Enter a year: ";
   is >> date.year;
-  // if (isValidDate(date))
-  //   return is;
-  // else
-  //   throw Date::InvalidDate("Date invalid");
-  return is;
+  try
+  {
+    if (isValidDate(date))
+    {
+      return is;
+    }
+    else
+    {
+      throw Date::InvalidDateException();
+    }
+  }
+  catch (Date::InvalidDateException)
+  {
+    std::cout << "Invalid Date" << std::endl;
+  }
 }
 
 Date &Date::operator++()
@@ -324,6 +443,12 @@ Date &Date::operator--()
     {
       tempMonth--;
       day = isALeapYear(tempYear) ? 29 : 28;
+    }
+    else if (temp.month == Month::January)
+    {
+      tempMonth = 12;
+      tempDay = 31;
+      tempYear--;
     }
     else
     {

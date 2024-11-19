@@ -44,7 +44,7 @@ public:
   */
   Date(int d, Month m, int y); // Overload Constructor
   // Destructor
-  // ~Date();
+  ~Date();
 
   // getters
   int getDay() const;
@@ -95,7 +95,7 @@ public:
   */
 
   // inner class InvalidDateException to throw error if a date is not valid
-  class InvalidDate
+  class InvalidDateException
   {
   };
 
